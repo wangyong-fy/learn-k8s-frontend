@@ -113,7 +113,7 @@ EOF
           kubectl -n "$APP_NS" apply -f k8s/frontend.yaml
           kubectl -n "$APP_NS" apply -f k8s/ingress.yaml
           kubectl -n "$APP_NS" set image deployment/frontend frontend=${REGISTRY}/learn-k8s-frontend:${TAG}
-          kubectl -n "$APP_NS" rollout status deployment/frontend --timeout=300s
+          kubectl -n "$APP_NS" rollout status deployment/frontend --timeout=600s
         '''
       }
     }
