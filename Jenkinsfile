@@ -35,13 +35,14 @@ pipeline {
           set -e
           HOSTPATH="${REPO_URL#*://}"
           CTX="git://${HOSTPATH}#refs/heads/${REPO_BRANCH}"
+          POD=kaniko-frontend-${TAG}
           echo "frontend context = ${CTX}"
 
           cat > /tmp/kaniko-fe.yaml <<EOF
 apiVersion: v1
 kind: Pod
 metadata:
-  name: kaniko-frontend-${TAG}
+  name: ${POD}
   namespace: jenkins
 spec:
   restartPolicy: Never
@@ -50,13 +51,20 @@ spec:
       image: ${KANIKO}
       args:
         - "--context=${CTX}"
-        - "--context-sub-path=."
         - "--dockerfile=Dockerfile"
         - "--destination=${REGISTRY}/learn-k8s-frontend:${TAG}"
-        - "--snapshot-mode=redo"
+        - "--snapshot-mode=time"
+        - "--compressed-caching=false"
         - "--cache=true"
         - "--cache-repo=${CACHE}"
         - "--verbosity=info"
+      resources:
+        requests:
+          cpu: "500m"
+          memory: "512Mi"
+        limits:
+          cpu: "2"
+          memory: "2Gi"
       volumeMounts:
         - name: docker-config
           mountPath: /kaniko/.docker
@@ -69,19 +77,27 @@ spec:
             path: config.json
 EOF
 
-          kubectl -n jenkins delete pod kaniko-frontend-${TAG} --ignore-not-found
+          kubectl -n jenkins delete pod ${POD} --ignore-not-found
           kubectl -n jenkins apply -f /tmp/kaniko-fe.yaml
-          for i in $(seq 1 120); do
-            PH=$(kubectl -n jenkins get pod kaniko-frontend-${TAG} -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
-            if [ "$PH" = "Succeeded" ]; then echo "frontend 镜像 OK"; break; fi
+
+          i=0
+          while [ $i -lt 180 ]; do
+            PH=$(kubectl -n jenkins get pod ${POD} -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
+            if [ "$PH" = "Succeeded" ]; then echo "frontend 镜像推送成功"; break; fi
             if [ "$PH" = "Failed" ]; then
               echo "frontend 构建失败，日志："
-              kubectl -n jenkins logs kaniko-frontend-${TAG} --tail=200
+              kubectl -n jenkins logs ${POD} --tail=200
               exit 1
             fi
+            if [ $((i % 6)) -eq 0 ]; then
+              echo "[$((i*10))s] 状态=${PH:-Pending} 最近日志:"
+              kubectl -n jenkins logs ${POD} --tail=3 2>/dev/null | sed 's/^/    /' || true
+            fi
             sleep 10
+            i=$((i+1))
           done
-          [ "$PH" = "Succeeded" ] || { echo "frontend 构建超时"; kubectl -n jenkins logs kaniko-frontend-${TAG} --tail=200; exit 1; }
+          [ "$PH" = "Succeeded" ] || { echo "frontend 构建超时"; kubectl -n jenkins logs ${POD} --tail=200; exit 1; }
+          kubectl -n jenkins delete pod ${POD} --ignore-not-found
         '''
       }
     }
