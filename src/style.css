@@ -1,0 +1,147 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+.card {
+  width: 100%;
+  max-width: 680px;
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.sub {
+  margin: 0 0 20px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.health {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.badge {
+  background: #334155;
+  color: #7dd3fc;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #475569;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #38bdf8;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #38bdf8;
+  color: #0f172a;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #f87171;
+  font-size: 13px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #334155;
+}
+
+.id {
+  color: #64748b;
+  font-size: 13px;
+  min-width: 36px;
+}
+
+.txt {
+  flex: 1;
+  word-break: break-all;
+}
+
+.edit-input {
+  flex: 1;
+}
+
+.ops {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+button.mini {
+  padding: 5px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  background: #475569;
+  color: #e2e8f0;
+}
+
+button.mini.ok {
+  background: #22c55e;
+  color: #052e16;
+}
+
+button.mini.danger {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+.empty {
+  color: #64748b;
+  font-size: 14px;
+}
